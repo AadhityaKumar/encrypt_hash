@@ -50,7 +50,7 @@ def AES_decrypt(data, key, initializationVector, m):
 def T_DES_enc(data, p, m, initializationVector):
 
     if(p == 1):
-        key = os.urandom(32)
+        key = os.urandom(24)
     else:
         key = os.urandom(16)
 
@@ -123,7 +123,7 @@ def RSA_decrypt(ciphertext, private_key):
     plainText = private_key.decrypt(ciphertext, padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label = None))
     return plainText
 
-if 'initializatinVector' not in st.session_state:
+if 'initializationVector' not in st.session_state:
     st.session_state.initializationVector = os.urandom(16)
 
 if "u_names" not in st.session_state:
