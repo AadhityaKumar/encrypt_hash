@@ -1,5 +1,6 @@
 import base64
 import os
+import random
 import streamlit as st
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives.asymmetric import padding
@@ -45,6 +46,30 @@ def AES_decrypt(data, key, initializationVector, m):
     unpadded_data = unpadder.update(plainText) + unpadder.finalize()
 
     return unpadded_data
+
+def generatePassword():
+
+    gen_pass = []
+    lc_alphabet = "abcdefghijklmnopqrstuvwxyz"
+    uc_alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    numbers = "1234567890"
+    symbols = "!@#$%^&*"
+
+    for i in range (20):
+        x = random.randint(0, 3)
+
+        if x == 0:
+            gen_pass.append(lc_alphabet[random.randint(0, 25)])
+        if x == 1:
+            gen_pass.append(uc_alphabet[random.randint(0, 25)])
+        if x == 2:
+            gen_pass.append(numbers[random.randint(0, 9)])
+        if x == 3:
+            gen_pass.append(symbols[random.randint(0, 7)])
+    
+    return gen_pass
+
+
 
 
 
@@ -158,6 +183,12 @@ elif(selecter == "Register"):
 
     unm = st.text_input("Enter username")
     ps = st.text_input("Enter password")
+
+    c = st.checkbox("generate password?")
+
+    if c:
+        gp = generatePassword()
+        print(*gp)
 
     if unm and ps:
         if unm not in st.session_state.u_names:
