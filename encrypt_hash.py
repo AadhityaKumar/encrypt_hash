@@ -31,7 +31,7 @@ def AES(data, p, m):
 
 
 
-def AES_decrypt(data, key):
+def AES_decrypt(data, key, initializationVector, m):
     
     if(m == 1):
         cipher = Cipher(algorithms.AES(key), modes.CBC(initializationVector))
@@ -63,17 +63,9 @@ def RSA_decrypt(ciphertext, private_key):
     plainText = private_key.decrypt(ciphertext, padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label = None))
     return plainText
 
-p = int(sys.argv[1])
-m = int(sys.argv[2])
-service = int(sys.argv[3])
-f = sys.argv[4]
-decode = sys.argv[5]
+
 
 selection = st.radio("Select operation: ", ["Hash a file", "Encrypt message (RSA)", "Decrypt message (RSA)", "Encrypt message(AES)", "Decrypt message(AES)"])
-
-
-file = open(f, "rb+")
-ext = f.split(".")
 
 
 st.session_state.privateKey = rsa.generate_private_key(public_exponent = 65537, key_size = 2048)
@@ -84,7 +76,7 @@ st.session_state.publicKey = st.session_state.privateKey.public_key()
 if(selection == "Encrypt message (AES)"):
 
     p = st.file_uploader("Choose a file")
-    data = bytearray(file.read())
+    data = bytearray(p.read())
 
     if p:
         ct, st.session_state.k, st.session_state.iv = AES(data, 0, 0)
@@ -94,13 +86,13 @@ if(selection == "Encrypt message (AES)"):
 elif(selection == "Hash a file"):
 
     p = st.file_uploader("Choose a file")
-    data = bytearray(file.read())
+    data = bytearray(p.read())
     Hashee(data)
 
 elif(selection == "Encrypt message (RSA)"):
 
     p = st.file_uploader("Choose a file")
-    data = bytearray(file.read())
+    data = bytearray(p.read())
 
     if p:
         n = RSA_encrypt(data, st.session_state.publicKey)
