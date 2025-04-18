@@ -126,6 +126,10 @@ def RSA_decrypt(ciphertext, private_key):
 if 'initializationVector' not in st.session_state:
     st.session_state.initializationVector = os.urandom(16)
 
+
+if 'initializationVector' not in st.session_state:
+    st.session_state.initializationVector_3DES = os.urandom(8)
+
 if "u_names" not in st.session_state:
     st.session_state.u_names = []
     st.session_state.pswds = []
@@ -172,7 +176,7 @@ if selecter == "Login":
 
             if p:
                 data = p.read()
-                ct, keyer = T_DES_enc(data, keySize, v, st.session_state.initializationVector)
+                ct, keyer = T_DES_enc(data, keySize, v, st.session_state.initializationVector_3DES)
                 st.session_state.k = base64.b64encode(keyer).decode()
 
                 st.download_button("Download Encrypted File (Copy key first)", data=ct, file_name="encrypted.bin")
@@ -249,7 +253,7 @@ if selecter == "Login":
             if data and ke and extt:
 
                 kb = base64.b64decode(ke)
-                br = T_DES_dec(data, kb, st.session_state.initializationVector, vvv)
+                br = T_DES_dec(data, kb, st.session_state.initializationVector_3DES, vvv)
                 st.download_button("Decrypted file: ", data = br, file_name = fnn)
 
     else:
