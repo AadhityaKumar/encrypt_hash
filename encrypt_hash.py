@@ -1,4 +1,4 @@
-import sys
+import base64
 import os
 import streamlit as st
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
@@ -81,7 +81,8 @@ if(selection == "Encrypt message (AES)"):
 
     if p:
         data = p.read()
-        ct, st.session_state.k = AES(data, 0, 0, st.session_state.initializationVector)
+        ct, keyer = AES(data, 0, 0, st.session_state.initializationVector)
+        st.session_state.k = base64.b64encode(keyer).decode()
 
         st.download_button("Download Encrypted File", data=ct, file_name="encrypted.bin")
         st.info("Key is: " + str(st.session_state.k))
@@ -122,7 +123,7 @@ elif(selection == "Decrypt message (RSA)"):
 elif(selection == "Decrypt message(AES)"):
     
     dar = st.file_uploader("Enter the encrypted file")
-    
+
     if dar:
         data = dar.read()
 
@@ -132,7 +133,9 @@ elif(selection == "Decrypt message(AES)"):
     fnn = "decrypted." + extt
 
     if data and ke and extt:
-        br = AES_decrypt(data, ke, st.session_state.initializationVector, 0)
+
+        kb = base64.b64decode(ke)
+        br = AES_decrypt(data, kb, st.session_state.initializationVector, 0)
         st.download_button("Decrypted file: ", data = br, file_name = fnn)
 
 
