@@ -156,7 +156,7 @@ if selecter == "Login":
             v = st.number_input("Block mode (1 if CBC, 0 if ECB)", value = 0)
             keySize = st.number_input("Key_size (1 if 256, 0 if 128)", value = 0)
 
-            if p and v and keySize:
+            if p:
                 data = p.read()
                 ct, keyer = AES(data, keySize, v, st.session_state.initializationVector)
                 st.session_state.k = base64.b64encode(keyer).decode()
@@ -170,7 +170,7 @@ if selecter == "Login":
             v = st.number_input("Block mode (1 if CBC, 0 if ECB)", value = 0)
             keySize = st.number_input("Key_size (1 if 256, 0 if 128)", value = 0)
 
-            if p and v and keySize:
+            if p:
                 data = p.read()
                 ct, keyer = T_DES_enc(data, keySize, v, st.session_state.initializationVector)
                 st.session_state.k = base64.b64encode(keyer).decode()
