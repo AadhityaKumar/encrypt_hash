@@ -74,7 +74,7 @@ if selecter == "Login":
     userName = st.text_input("enter username")
     passWord = st.text_input("enter password")
 
-    if(userName in st.session_state.u_names and Hashee(bytes(passWord)) == st.session_state.pswds[st.session_state.u_names.index(userName)]):
+    if(userName in st.session_state.u_names and Hashee(passWord.encode()) == st.session_state.pswds[st.session_state.u_names.index(userName)]):
 
         selection = st.radio("Select operation: ", ["Hash a file", "Encrypt message (RSA)", "Decrypt message (RSA)", "Encrypt message (AES)", "Decrypt message(AES)"])
 
@@ -162,7 +162,7 @@ elif(selecter == "Register"):
     if unm and ps:
         if unm not in st.session_state.u_names:
             st.session_state.u_names.append(unm)
-            st.session_state.pswds.append(Hashee(bytes(ps)))
+            st.session_state.pswds.append(Hashee(ps.encode()))
             st.success("Account created")
         else:
             st.error("Username already exists")
