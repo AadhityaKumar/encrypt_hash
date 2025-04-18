@@ -153,8 +153,8 @@ if selecter == "Login":
         if(selection == "Encrypt message (AES)"):
 
             p = st.file_uploader("Choose a file")
-            v = st.number_input("Block mode (1 if CBC, 0 if ECB)")
-            keySize = st.number_input("Key_size (1 if 256, 0 if 128)")
+            v = st.number_input("Block mode (1 if CBC, 0 if ECB)", value = 0)
+            keySize = st.number_input("Key_size (1 if 256, 0 if 128)", value = 0)
 
             if p and v and keySize:
                 data = p.read()
@@ -167,8 +167,8 @@ if selecter == "Login":
         elif(selection == "Encrypt message (3DES)"):
 
             p = st.file_uploader("Choose a file")
-            v = st.number_input("Block mode (1 if CBC, 0 if ECB)")
-            keySize = st.number_input("Key_size (1 if 256, 0 if 128)")
+            v = st.number_input("Block mode (1 if CBC, 0 if ECB)", value = 0)
+            keySize = st.number_input("Key_size (1 if 256, 0 if 128)", value = 0)
 
             if p and v and keySize:
                 data = p.read()
