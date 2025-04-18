@@ -152,7 +152,6 @@ if selecter == "Login":
 
 
 
-        #data = b"absss"
 
         if(selection == "Encrypt message (AES)"):
 
@@ -172,7 +171,7 @@ if selecter == "Login":
 
             p = st.file_uploader("Choose a file")
             v = st.number_input("Block mode (1 if CBC, 0 if ECB)", value = 0)
-            keySize = st.number_input("Key_size (1 if 256, 0 if 128)", value = 0)
+            keySize = st.number_input("Key_size (1 if 192, 0 if 128)", value = 0)
 
             if p:
                 data = p.read()
