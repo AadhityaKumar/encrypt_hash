@@ -215,7 +215,7 @@ if selecter == "Login":
         elif(selection == "Decrypt message(AES)"):
             
             dar = st.file_uploader("Enter the encrypted file")
-            vv = st.number_input("Block mode (1 if CBC, 0 if ECB)")
+            vv = st.number_input("Block mode (1 if CBC, 0 if ECB)", value = 0)
 
 
             if dar:
@@ -226,7 +226,7 @@ if selecter == "Login":
             extt = st.text_input("Enter the file extension")
             fnn = "decrypted." + extt
 
-            if data and ke and extt and vv:
+            if data and ke and extt:
 
                 kb = base64.b64decode(ke)
                 br = AES_decrypt(data, kb, st.session_state.initializationVector, vv)
@@ -235,7 +235,7 @@ if selecter == "Login":
         elif(selection == "Decrypt message (3DES)"):
             
             dar = st.file_uploader("Enter the encrypted file")
-            vv = st.number_input("Block mode (1 if CBC, 0 if ECB)")
+            vvv = st.number_input("Block mode (1 if CBC, 0 if ECB)", value = 0)
 
 
             if dar:
@@ -246,10 +246,10 @@ if selecter == "Login":
             extt = st.text_input("Enter the file extension")
             fnn = "decrypted." + extt
 
-            if data and ke and extt and vv:
+            if data and ke and extt:
 
                 kb = base64.b64decode(ke)
-                br = T_DES_dec(data, kb, st.session_state.initializationVector, vv)
+                br = T_DES_dec(data, kb, st.session_state.initializationVector, vvv)
                 st.download_button("Decrypted file: ", data = br, file_name = fnn)
 
     else:
