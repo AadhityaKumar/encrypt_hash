@@ -30,7 +30,6 @@ def AES(data, p, m, initializationVector):
     return cipherText, key
 
 
-
 def AES_decrypt(data, key, initializationVector, m):
     
     if(m == 1):
@@ -46,6 +45,43 @@ def AES_decrypt(data, key, initializationVector, m):
     unpadded_data = unpadder.update(plainText) + unpadder.finalize()
 
     return unpadded_data
+
+
+def T_DES_enc(data, p, m, initializationVector):
+
+    if(p == 1):
+        key = os.urandom(32)
+    else:
+        key = os.urandom(16)
+
+    if(m == 1):
+        cipher = Cipher(algorithms.TripleDES(key), modes.CBC(initializationVector))
+    else:
+        cipher = Cipher(algorithms.TripleDES(key), modes.ECB())
+
+    encrypt = cipher.encryptor()
+
+    padder = PKCS7(algorithms.AES.block_size).padder()
+    padded_data = padder.update(data) + padder.finalize()
+
+    cipherText = encrypt.update(padded_data) + encrypt.finalize()
+    return cipherText, key
+
+def T_DES_dec(data, key, initializationVector, m):
+    if(m == 1):
+        cipher = Cipher(algorithms.TripleDES(key), modes.CBC(initializationVector))
+    else:
+        cipher = Cipher(algorithms.TripleDES(key), modes.ECB())
+    
+    decrypt = cipher.decryptor()
+
+    plainText = decrypt.update(data) + decrypt.finalize()
+
+    unpadder = PKCS7(algorithms.AES.block_size).unpadder()
+    unpadded_data = unpadder.update(plainText) + unpadder.finalize()
+
+    return unpadded_data
+
 
 def generatePassword():
 
@@ -87,6 +123,8 @@ def RSA_decrypt(ciphertext, private_key):
     plainText = private_key.decrypt(ciphertext, padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label = None))
     return plainText
 
+if 'initializatinVector' not in st.session_state:
+    st.session_state.initializationVector = os.urandom(16)
 
 if "u_names" not in st.session_state:
     st.session_state.u_names = []
@@ -101,14 +139,13 @@ if selecter == "Login":
 
     if(userName in st.session_state.u_names and Hashee(passWord.encode()) == st.session_state.pswds[st.session_state.u_names.index(userName)]):
 
-        selection = st.radio("Select operation: ", ["Hash a file", "Encrypt message (RSA)", "Decrypt message (RSA)", "Encrypt message (AES)", "Decrypt message(AES)"])
+        selection = st.radio("Select operation: ", ["Hash a file", "Encrypt message (RSA)", "Decrypt message (RSA)", 
+        "Encrypt message (AES)", "Decrypt message(AES)", "Encrypt message (3DES)", "Decrypt message (3DES)"])
 
         if 'privateKey' not in st.session_state:
             st.session_state.privateKey = rsa.generate_private_key(public_exponent = 65537, key_size = 2048)
             st.session_state.publicKey = st.session_state.privateKey.public_key()
 
-        if 'initializatinVector' not in st.session_state:
-            st.session_state.initializationVector = os.urandom(16)
 
 
         #data = b"absss"
@@ -116,14 +153,31 @@ if selecter == "Login":
         if(selection == "Encrypt message (AES)"):
 
             p = st.file_uploader("Choose a file")
+            v = st.number_input("Block mode (1 if CBC, 0 if ECB)")
+            keySize = st.number_input("Key_size (1 if 256, 0 if 128)")
 
-            if p:
+            if p and v and keySize:
                 data = p.read()
-                ct, keyer = AES(data, 0, 0, st.session_state.initializationVector)
+                ct, keyer = AES(data, keySize, v, st.session_state.initializationVector)
                 st.session_state.k = base64.b64encode(keyer).decode()
 
-                st.download_button("Download Encrypted File", data=ct, file_name="encrypted.bin")
+                st.download_button("Download Encrypted File (Copy key first)", data=ct, file_name="encrypted.bin")
                 st.info("Key is: " + str(st.session_state.k))
+        
+        elif(selection == "Encrypt message (3DES)"):
+
+            p = st.file_uploader("Choose a file")
+            v = st.number_input("Block mode (1 if CBC, 0 if ECB)")
+            keySize = st.number_input("Key_size (1 if 256, 0 if 128)")
+
+            if p and v and keySize:
+                data = p.read()
+                ct, keyer = T_DES_enc(data, keySize, v, st.session_state.initializationVector)
+                st.session_state.k = base64.b64encode(keyer).decode()
+
+                st.download_button("Download Encrypted File (Copy key first)", data=ct, file_name="encrypted.bin")
+                st.info("Key is: " + str(st.session_state.k))
+
 
         elif(selection == "Hash a file"):
 
@@ -161,6 +215,8 @@ if selecter == "Login":
         elif(selection == "Decrypt message(AES)"):
             
             dar = st.file_uploader("Enter the encrypted file")
+            vv = st.number_input("Block mode (1 if CBC, 0 if ECB)")
+
 
             if dar:
                 data = dar.read()
@@ -170,10 +226,30 @@ if selecter == "Login":
             extt = st.text_input("Enter the file extension")
             fnn = "decrypted." + extt
 
-            if data and ke and extt:
+            if data and ke and extt and vv:
 
                 kb = base64.b64decode(ke)
-                br = AES_decrypt(data, kb, st.session_state.initializationVector, 0)
+                br = AES_decrypt(data, kb, st.session_state.initializationVector, vv)
+                st.download_button("Decrypted file: ", data = br, file_name = fnn)
+        
+        elif(selection == "Decrypt message (3DES)"):
+            
+            dar = st.file_uploader("Enter the encrypted file")
+            vv = st.number_input("Block mode (1 if CBC, 0 if ECB)")
+
+
+            if dar:
+                data = dar.read()
+
+            ke = st.text_input("Enter the key")
+
+            extt = st.text_input("Enter the file extension")
+            fnn = "decrypted." + extt
+
+            if data and ke and extt and vv:
+
+                kb = base64.b64decode(ke)
+                br = T_DES_dec(data, kb, st.session_state.initializationVector, vv)
                 st.download_button("Decrypted file: ", data = br, file_name = fnn)
 
     else:
