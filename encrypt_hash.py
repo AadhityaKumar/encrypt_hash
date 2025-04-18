@@ -62,84 +62,109 @@ def RSA_decrypt(ciphertext, private_key):
     return plainText
 
 
+if "u_names" not in st.session_state:
+    st.session_state.u_names = []
+    st.session_state.pswds = []
 
-selection = st.radio("Select operation: ", ["Hash a file", "Encrypt message (RSA)", "Decrypt message (RSA)", "Encrypt message (AES)", "Decrypt message(AES)"])
+selecter = st.radio("Select: ", ["Login", "Register"])
 
-if 'privateKey' not in st.session_state:
-    st.session_state.privateKey = rsa.generate_private_key(public_exponent = 65537, key_size = 2048)
-    st.session_state.publicKey = st.session_state.privateKey.public_key()
+if selecter == "Login":
 
-if 'initializatinVector' not in st.session_state:
-    st.session_state.initializationVector = os.urandom(16)
+    userName = st.text_input("enter username")
+    passWord = st.text_input("enter password")
 
+    if(userName in st.session_state.u_names and Hashee(passWord) == st.session_state.pswds[st.session_state.u_names.index(userName)]):
 
-#data = b"absss"
+        selection = st.radio("Select operation: ", ["Hash a file", "Encrypt message (RSA)", "Decrypt message (RSA)", "Encrypt message (AES)", "Decrypt message(AES)"])
 
-if(selection == "Encrypt message (AES)"):
+        if 'privateKey' not in st.session_state:
+            st.session_state.privateKey = rsa.generate_private_key(public_exponent = 65537, key_size = 2048)
+            st.session_state.publicKey = st.session_state.privateKey.public_key()
 
-    p = st.file_uploader("Choose a file")
-
-    if p:
-        data = p.read()
-        ct, keyer = AES(data, 0, 0, st.session_state.initializationVector)
-        st.session_state.k = base64.b64encode(keyer).decode()
-
-        st.download_button("Download Encrypted File", data=ct, file_name="encrypted.bin")
-        st.info("Key is: " + str(st.session_state.k))
-
-elif(selection == "Hash a file"):
-
-    p = st.file_uploader("Choose a file")
-
-    if p:
-        data = bytearray(p.read())
-        hx = Hashee(data)
-        st.info(hx)
+        if 'initializatinVector' not in st.session_state:
+            st.session_state.initializationVector = os.urandom(16)
 
 
-elif(selection == "Encrypt message (RSA)"):
+        #data = b"absss"
 
-    p = st.file_uploader("Choose a file")
+        if(selection == "Encrypt message (AES)"):
 
-    if p:
-        data = p.read()
-        n = RSA_encrypt(data, st.session_state.publicKey)
+            p = st.file_uploader("Choose a file")
 
-        st.download_button("Download Encrypted File", data=n, file_name="encrypted.bin")
-        st.info("Public and Private keys are saved to system")
-    
-elif(selection == "Decrypt message (RSA)"):
+            if p:
+                data = p.read()
+                ct, keyer = AES(data, 0, 0, st.session_state.initializationVector)
+                st.session_state.k = base64.b64encode(keyer).decode()
 
-    dat = st.file_uploader("Enter the encrypted file")
-    if dat:
-        data = dat.read()
-    ext = st.text_input("Enter the file extension")
-    fn = "decrypted." + ext
+                st.download_button("Download Encrypted File", data=ct, file_name="encrypted.bin")
+                st.info("Key is: " + str(st.session_state.k))
 
-    if data and ext:
-        xx = RSA_decrypt(data, st.session_state.privateKey)
-        st.download_button("Decrypted file: ", data = bytes(xx), file_name = fn)
+        elif(selection == "Hash a file"):
 
-elif(selection == "Decrypt message(AES)"):
-    
-    dar = st.file_uploader("Enter the encrypted file")
+            p = st.file_uploader("Choose a file")
 
-    if dar:
-        data = dar.read()
-
-    ke = st.text_input("Enter the key")
-
-    extt = st.text_input("Enter the file extension")
-    fnn = "decrypted." + extt
-
-    if data and ke and extt:
-
-        kb = base64.b64decode(ke)
-        br = AES_decrypt(data, kb, st.session_state.initializationVector, 0)
-        st.download_button("Decrypted file: ", data = br, file_name = fnn)
+            if p:
+                data = bytearray(p.read())
+                hx = Hashee(data)
+                st.info(hx)
 
 
+        elif(selection == "Encrypt message (RSA)"):
 
+            p = st.file_uploader("Choose a file")
+
+            if p:
+                data = p.read()
+                n = RSA_encrypt(data, st.session_state.publicKey)
+
+                st.download_button("Download Encrypted File", data=n, file_name="encrypted.bin")
+                st.info("Public and Private keys are saved to system")
+            
+        elif(selection == "Decrypt message (RSA)"):
+
+            dat = st.file_uploader("Enter the encrypted file")
+            if dat:
+                data = dat.read()
+            ext = st.text_input("Enter the file extension")
+            fn = "decrypted." + ext
+
+            if data and ext:
+                xx = RSA_decrypt(data, st.session_state.privateKey)
+                st.download_button("Decrypted file: ", data = bytes(xx), file_name = fn)
+
+        elif(selection == "Decrypt message(AES)"):
+            
+            dar = st.file_uploader("Enter the encrypted file")
+
+            if dar:
+                data = dar.read()
+
+            ke = st.text_input("Enter the key")
+
+            extt = st.text_input("Enter the file extension")
+            fnn = "decrypted." + extt
+
+            if data and ke and extt:
+
+                kb = base64.b64decode(ke)
+                br = AES_decrypt(data, kb, st.session_state.initializationVector, 0)
+                st.download_button("Decrypted file: ", data = br, file_name = fnn)
+
+    else:
+        st.error("incorrect username or password")
+
+elif(selecter == "Register"):
+
+    unm = st.text_input("Enter username")
+    ps = st.text_input("Enter password")
+
+    if unm and ps:
+        if unm not in st.session_state.u_names:
+            st.session_state.u_names.append(unm)
+            st.session_state.pswds.append(Hashee(ps))
+            st.success("Account created")
+        else:
+            st.error("Username already exists")
 
 
 
