@@ -53,6 +53,7 @@ def Hashee(data):
     hasher.update(data)
     digest = hasher.finalize()
     return digest.hex()
+
 def RSA_encrypt(plaintext, public_key):
     ciphertext = public_key.encrypt(plaintext, padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label = None))
     return ciphertext
@@ -73,7 +74,7 @@ if selecter == "Login":
     userName = st.text_input("enter username")
     passWord = st.text_input("enter password")
 
-    if(userName in st.session_state.u_names and Hashee(passWord) == st.session_state.pswds[st.session_state.u_names.index(userName)]):
+    if(userName in st.session_state.u_names and Hashee(bytearray(passWord)) == st.session_state.pswds[st.session_state.u_names.index(userName)]):
 
         selection = st.radio("Select operation: ", ["Hash a file", "Encrypt message (RSA)", "Decrypt message (RSA)", "Encrypt message (AES)", "Decrypt message(AES)"])
 
@@ -161,7 +162,7 @@ elif(selecter == "Register"):
     if unm and ps:
         if unm not in st.session_state.u_names:
             st.session_state.u_names.append(unm)
-            st.session_state.pswds.append(Hashee(ps))
+            st.session_state.pswds.append(Hashee(bytearray(ps)))
             st.success("Account created")
         else:
             st.error("Username already exists")
