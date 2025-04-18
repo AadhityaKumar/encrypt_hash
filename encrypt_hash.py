@@ -188,7 +188,7 @@ elif(selecter == "Register"):
 
     if c:
         gp = generatePassword()
-        print(*gp)
+        st.info(*gp)
 
     if unm and ps:
         if unm not in st.session_state.u_names:
