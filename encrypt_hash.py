@@ -67,9 +67,9 @@ def RSA_decrypt(ciphertext, private_key):
 
 selection = st.radio("Select operation: ", ["Hash a file", "Encrypt message (RSA)", "Decrypt message (RSA)", "Encrypt message (AES)", "Decrypt message(AES)"])
 
-
-st.session_state.privateKey = rsa.generate_private_key(public_exponent = 65537, key_size = 2048)
-st.session_state.publicKey = st.session_state.privateKey.public_key()
+if 'privateKey' not in st.session_state:
+    st.session_state.privateKey = rsa.generate_private_key(public_exponent = 65537, key_size = 2048)
+    st.session_state.publicKey = st.session_state.privateKey.public_key()
 
 #data = b"absss"
 
@@ -94,10 +94,10 @@ elif(selection == "Encrypt message (RSA)"):
     p = st.file_uploader("Choose a file")
 
     if p:
-        data = bytearray(p.read())
+        data = p.read()
         n = RSA_encrypt(data, st.session_state.publicKey)
 
-        st.info("Ciphertext is: " + str(n))
+        st.download_button("Download Encrypted File", data=n, file_name="encrypted.bin")
         st.info("Public and Private keys are saved to system")
     
 elif(selection == "Decrypt message (RSA)"):
