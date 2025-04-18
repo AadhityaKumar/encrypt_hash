@@ -102,7 +102,8 @@ elif(selection == "Encrypt message (RSA)"):
     
 elif(selection == "Decrypt message (RSA)"):
 
-    data = st.file_uploader("Enter the encrypted file")
+    dat = st.file_uploader("Enter the encrypted file")
+    data = dat.read()
     ext = st.text_input("Enter the file extension")
     fn = "decrypted." + ext
 
