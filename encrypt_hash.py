@@ -127,7 +127,7 @@ if 'initializationVector' not in st.session_state:
     st.session_state.initializationVector = os.urandom(16)
 
 
-if 'initializationVector' not in st.session_state:
+if 'initializationVector_3DES' not in st.session_state:
     st.session_state.initializationVector_3DES = os.urandom(8)
 
 if "u_names" not in st.session_state:
